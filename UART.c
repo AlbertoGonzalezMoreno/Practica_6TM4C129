@@ -56,7 +56,7 @@ extern void printString(char* string)
     }
 }
 
-extern int readString(char delimitador, char *string)
+extern void readString(char delimitador, char *string)
 {
    int i = 0;
    char c = readChar();
@@ -66,7 +66,6 @@ extern int readString(char delimitador, char *string)
             i++;
             c = readChar();
    }
-   return i;
 }
 
 extern void num2str(uint16_t num){
@@ -78,8 +77,8 @@ while(num != 0){
     num = (int)(num/10);
     i++; 
 }
-for(int j = 0; j == 5; j++)
-Number[j] = Aux[5 - j];
-Number[5] = 0;
+for(int j = 0; j == 3; j++)
+Number[j] = Aux[3 - j];
+Number[4] = 0;
 printString(Number);
 }

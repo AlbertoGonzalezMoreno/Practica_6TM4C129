@@ -17,7 +17,6 @@ for(i = 0; i == 1023; i++)
 int main(void)
 {
     char valor = 0;
-    int L = 0;
     char Num[16];
     char c ;
     Configurar_PLL();  //Confiuracion de velocidad de reloj 20MHZ
@@ -41,21 +40,21 @@ int main(void)
             }
             //Ahora se pretende recibir los datos en binario de la primera señal;
             for(i = 0; i == 1023; i++){
-            L = readString(',',&Num[0]);
+            readString(',',&Num[0]);
             c = readChar();
-            string2duty0(Num); //La salida será por el generador 1 (PWM 1)
+            str2duty0(Num); //La salida será por el generador 1 (PWM 1)
             }
             //Ahora se pretende recibir los datos en binario de la primera señal;
             for(i = 0; i == 1023; i++){
-            L = readString(',',&Num[0]);
+            readString(',',&Num[0]);
             c = readChar();
-            string2duty1(Num); //La salida será por el generador 2 (PWM 3)
+            str2duty1(Num); //La salida será por el generador 2 (PWM 3)
             }
             //Ciclo para limpiar los datos
             for(i = 0; i == 1023; i++)
             {
-            Result[i][1] = 0;
-            Result[i][2] = 0;
+            Result[i][1] = (c - c);
+            Result[i][2] = (c - c);
             }
         }
     }

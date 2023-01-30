@@ -24,7 +24,6 @@ extern void Configurar_Timer0A(void(*task)(void), unsigned long int periodo)
     // numero de interrupcion TIMER0A = 19 
     // n=19 ----> [4n+3] [4n+2] [4n+1] [4n] ---> [4n+3]
     TIMER0->CTL = (1<<0);
-
 }
 
 extern void Timer0A_Handler(void)
