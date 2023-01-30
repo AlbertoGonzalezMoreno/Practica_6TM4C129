@@ -6,13 +6,12 @@
  */
 #include "lib/include.h"
 
-extern void Configura_Reg_ADC0(void)
+extern void Configurar_ADC(void)
 {
     /*
-    Habilitar el modulo 0 del ADC con dos canales analogicos 
-    en el puerto E a una velocidad de conversion de 250ksps
-    dandole la mayor prioridad al secuenciador 2 con evento
-    de procesador 
+    Se habilita el modulo 0 con el secuenciador 2 para leer los siguientes canales
+    Canal 8: PE5
+    Canal 9: PE4
     */
      //Pag 396 para inicializar el modulo de reloj del adc RCGCADC
     SYSCTL->RCGCADC = (1<<0); 
@@ -49,20 +48,13 @@ extern void Configura_Reg_ADC0(void)
     ADC0->ACTSS = (0<<3) | (1<<2) | (0<<1) | (0<<0);
     ADC0->PSSI |= (1<<2);
 }
-extern void ADC0_InSeq2(uint16_t *Result,uint16_t *duty){
-
+extern void Lectura_ADC(uint16_t *Result){
     //ADC Processor Sample Sequence Initiate (ADCPSSI)
        ADC0->PSSI = 0x00000004;
        while((ADC0->RIS&0x04)==0){}; // espera al convertidor
-       //Result[1] = ADC0->SSFIFO2&0xFFF; //  Leer  el resultado almacenado en la pila2
-       //Result[0] = ADC0->SSFIFO2&0xFFF;
-       //global = &Result[0];
-       //duty[1] = (Result[1]*46875)/4096;
-       //duty[0] = (Result[0]*46875)/4096;
-       //duty[1] = 47500 - (Result[1]*5000)/4096;
-       //duty[0] = 47500 - (Result[0]*5000)/4096;
+       Result[1] = ADC0->SSFIFO2&0xFFF; //  Leer  el resultado almacenado en la pila2
+       Result[0] = ADC0->SSFIFO2&0xFFF;
        ADC0->ISC = 0x0004;  //Conversion finalizada
-
 }
 
 

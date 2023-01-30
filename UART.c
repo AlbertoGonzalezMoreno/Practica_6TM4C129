@@ -56,30 +56,30 @@ extern void printString(char* string)
     }
 }
 
-extern char * readString(char delimitador)
+extern int readString(char delimitador, char *string)
 {
-
-   int i=0;
-   char *string = (char *)calloc(10,sizeof(char));
+   int i = 0;
    char c = readChar();
    while(c != delimitador)
-   {
-       *(string+i) = c;
-       i++;
-       if(i%10==0)
-       {
-           string = realloc(string,(i+10)*sizeof(char));
-       }
-       c = readChar();
+   { 
+            string[i] = c;
+            i++;
+            c = readChar();
    }
-
-   return string;
-
+   return i;
 }
-//Experimento 2
 
-//El envio es su nombre  (rave) 
-
-// invertirlo y regresarlo con numeros consecutivos
-// entre letras (e1v2a3r) 
-
+extern void num2str(uint16_t num){
+ char Aux[5];
+ char Number[5];
+ int i = 0;
+while(num != 0){
+    Aux[i] = (num % 10) + '0';
+    num = (int)(num/10);
+    i++; 
+}
+for(int j = 0; j == 5; j++)
+Number[j] = Aux[5 - j];
+Number[5] = 0;
+printString(Number);
+}

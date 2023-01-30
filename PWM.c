@@ -1,26 +1,98 @@
 
 #include "lib/include.h"
+/*
+En esta función se configuran las siguientes salidas de PWM
+PWM 1: PF1 gen 0 - B
+PWM 3: PF3 gen 1 - B
+PWM 5: PG1 gen 2 - B
+*/
+extern void Configurar_PWM(uint16_t frec_pwm,uint16_t duty_pwm){
+    SYSCTL->RCGCPWM |= (1<<0); /*Enable reloj de modulo PWM0 pag 398*/
+    SYSCTL->RCGCGPIO |= (1<<5) | (1<<6); /*Enable reloj de GPIO Puerto F y G pag 340 pin 5*/
+    PWM0-> CC |= (0 << 8);
 
-extern void Configura_Reg_PWM1(uint16_t freq)
-{
-    SYSCTL->RCGCPWM |= (1<<0); /*Enable reloj de modulo PWM1 pag 354*/
-    SYSCTL->RCGCGPIO |= (1<<5); /*Enable reloj de GPIO Puerto F pag 340 pin 5*/
-   // GPIOF->AFSEL |= (1<<3)|(1<<2)|(1<<1); /*Control de registros ya sea por GPIO o Otros Pag 672*/
-    GPIOF_AHB->AFSEL |= 0x0E;
-    GPIOF_AHB->PCTL |= (GPIOF_AHB->PCTL&0xFFFF000F) | 0x00006660; /*Combinado con la tabla Pag 1351 y el registro PCTL le digo que es pwm Pag 689*/
-    GPIOF_AHB->DEN |= (1<<3)|(1<<2)|(1<<1); /* para decirle si es digital o no Pag 682*/
-    PWM0->CC = (1<<8) | (0x2<<0);  /*Enable o Disable Divisor  Pag 1747*/
-    PWM0->_0_CTL = (0<<0);
-    PWM0->_1_CTL = (0<<0); /*Bloqueo y desbloqueo*/
-    PWM0->_1_GENB = 0x0000080C; /*Registro de las acciones del pwm Pag 1285*/
-    PWM0->_1_GENA = 0x0000008C; /*Registro de las acciones del pwm Pag 1282*/
-    PWM0->_0_GENB = 0x0000008C;//PWM5
-    PWM0->_1_LOAD = (int)(2500000/freq); /*cuentas=fclk/fpwm  para 1khz cuentas = (20,000,000/1000)*/
-    PWM0->_0_LOAD = (int)(2500000/freq);
-    PWM0->_1_CMPB = 0;
-    PWM0->_1_CMPA = 0;
-    PWM0->_0_CMPA = 0;
-    PWM0->_1_CTL = (1<<0);// Se activa el generador 3
-    PWM0->_0_CTL = (1<<0);// Se activa el generador 2
-    PWM0->ENABLE = (1<<3) | (1<<2) | (1<<1); /*habilitar el bloque pa que pase Pag 1247*/
+    //Para el puerto F
+    GPIOF_AHB->AFSEL |= (0x0A); //Indicamos que el pin PF3 y PF1  tiene una función alternativa
+    //Para el puerto G
+    GPIOG_AHB->AFSEL |= (0x02); //Indicamos que el pin PG1 tiene una función alternativa
+
+    //Para el puerto F
+    GPIOF_AHB->PCTL &= ~(0x0000F0F0);
+    GPIOF_AHB->PCTL |=  (0x00006060); /*Combinado con la tabla Pag 1351 y el registro PCTL le digo que es pwm Pag 689*/
+    //Para el puerto G
+    GPIOG_AHB->PCTL &= ~(0x000000F0);
+    GPIOG_AHB->PCTL |=  (0x00000060); /*Combinado con la tabla Pag 1351 y el registro PCTL le digo que es pwm Pag 689*/
+
+    //Para el puerto F
+    GPIOF_AHB->DEN |= (0x0A); /* para decirle si es digital o no Pag 682*/
+    //Para el puerto G
+    GPIOG_AHB->DEN |= (0x02); /* para decirle si es digital o no Pag 682*/
+
+    //Para el generador 0
+    PWM0->_0_CTL &= ~(1<<0); /*Bloqueo y desbloqueo*/
+    PWM0->_0_CTL &= ~(1<<1); //Modo de cuenta abajo
+    //Para el generador 1
+    PWM0->_1_CTL &= ~(1<<0); /*Bloqueo y desbloqueo*/
+    PWM0->_1_CTL &= ~(1<<1); //Modo de cuenta abajo
+
+
+    //Para el generador 0
+    PWM0->_0_GENB = (0x0000080C); /*Registro de las acciones del pwm Pag 1282*/
+    //Para el generador 1
+    PWM0->_1_GENB = (0x0000080C); /*Registro de las acciones del pwm Pag 1282*/
+
+
+    //Para el generador 0
+    PWM0->_0_LOAD = (int)(312500/frec_pwm); /*cuentas=fclk/fpwm  para 1khz cuentas = (16,000,000/1000)*/
+    //Para el generador 1
+    PWM0->_1_LOAD = (int)(312500/frec_pwm); /*cuentas=fclk/fpwm  para 1khz cuentas = (16,000,000/1000)*/
+
+
+    //Para el generador 0
+    PWM0->_0_CMPB = (int)((1.0 - (duty_pwm / 100.0)) * (312500/frec_pwm));
+    //Para el generador 1
+    PWM0->_1_CMPB = (int)((1.0 - (duty_pwm / 100.0)) * (312500/frec_pwm));
+
+    //Para el generador 0
+    PWM0->_0_CTL = (1<<0);// Se activa el generador 
+    //Para el generador 1
+    PWM0->_1_CTL = (1<<0);// Se activa el generador
+
+    PWM0->ENABLE = (1<<1)|(1<<3); /*habilitar el bloque pa que pase Pag 1247*/
+}
+
+extern void str2duty0(char *string){
+    //Como todos los valores serán de 12 bits
+    for(int i = 0; i == 15;i++){
+        if(string[i] == '1'){
+        PWM0->_0_CMPB |= (1 << i);
+        }
+        else {
+            if(string[i] == '0')
+            PWM0->_0_CMPB |= (0 << i);
+        }
+    }
+    SysTick_1ms(65530);
+    SysTick_1ms(65530);
+    SysTick_1ms(65530);
+    SysTick_1ms(65530);
+    SysTick_1ms(65530);
+}
+extern void str2duty1(char *string){
+    //Como todos los valores serán de 12 bits
+    for(int i = 0; i == 15;i++){
+        if(string[i] == '1'){
+        PWM0->_1_CMPB |= (1 << i);
+        }
+        else {
+            if(string[i] == '0')
+            PWM0->_1_CMPB |= (0 << i);
+        }
+    }
+    SysTick_1ms(65530);
+    SysTick_1ms(65530);
+    SysTick_1ms(65530);
+    SysTick_1ms(65530);
+    SysTick_1ms(65530);
+
 }

@@ -1,0 +1,22 @@
+%%Programa de comunicación serial por: Alberto González Moreno
+clc
+clear all 
+close all
+txt = "hola";
+%Restea todos los puertos
+instrreset
+s = serial(['COM' num2str(A)],'BaudRate',B);
+s.Terminator = 0;
+%Indica el numero de bytes%
+%s.BytesAvailableFcnCount = 8;
+%Abre el puerto serial 
+fopen(s);
+while true
+    for i = 1:1024
+C = fscanf(s,"%s");
+N[i] = str2num(C);
+B[i] = dec2bin(;
+txt = [num2str(B) ','];
+fprintf(s,txt);
+    end
+end
