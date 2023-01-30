@@ -1,4 +1,4 @@
-gcc/PWM.o: PWM.c lib/include.h \
+gcc/SysTick.o: SysTick.c lib/include.h \
  d:\programas\arm\10\ 2021.10\lib\gcc\arm-none-eabi\10.3.1\include\stdint.h \
  d:\programas\arm\10\ 2021.10\arm-none-eabi\include\stdint.h \
  d:\programas\arm\10\ 2021.10\arm-none-eabi\include\machine\_default_types.h \

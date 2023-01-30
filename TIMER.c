@@ -13,8 +13,10 @@ extern void Configurar_Timer0A(void(*task)(void), unsigned long int periodo)
     TIMER0->CTL = (0<<0);  // desabilitar el temporizador a usar antes de hacer cambios
     TIMER0->CFG = 0x00000000; // modo de operacion 16 o 32 bits 
     // seleciona 32 bits con 0x0
-    TIMER0->TAMR = (0x2<<0); // modo periodico pag 981
-    TIMER0->TAILR = periodo - 1;
+    TIMER0->TAMR |= (0x2<<0); // modo periodico pag 981
+    TIMER0->TAMR &= ~(1<<4); // modo periodico pag 981
+    TIMER0->TAILR = 20000000 * periodo;
+    //INTERRUPCION
     TIMER0->ICR = 1<<0;
     TIMER0->IMR = 1<<0;
     NVIC->IP[4] = (NVIC->IP[4]&0x00FFFFFF) | 0x20000000;
@@ -27,8 +29,6 @@ extern void Configurar_Timer0A(void(*task)(void), unsigned long int periodo)
 
 extern void Timer0A_Handler(void)
 {
-  TIMER0->ICR = 1<<0;// acknowledge TIMER0A timeout
-  (*PeriodicTask)();           
+    (*PeriodicTask)();  
+  TIMER0->ICR = 1<<0;// acknowledge TIMER0A timeout         
 }
-
-

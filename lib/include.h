@@ -14,7 +14,7 @@
 // fvoc = fin * MDIV
 //      = 5MHz * 96.00 = 480MHz
 // fsyclk = fvco / (PSYSDIV + 1)
-//        = 480 / (3 + 1 ) = 120MHz
+//        = 480 / (23 + 1 ) = 20MHz
 
 #define MINT    96
 #define MFRAC   0
@@ -47,7 +47,7 @@
 #include "ADC.h"
 #include "PWM.h"
 #include "TIMER.h"
-
+#include "SysTick.h"
 
 
 
